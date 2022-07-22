@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "microbatcher"
+version = "0.1.0"
+description = ""
+authors = ["Biswaroop Bhattacharjee <biswaroop08@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+isort = "^5.10.1"
+black = "^22.6.0"
+pytest-cov = "^3.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
