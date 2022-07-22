@@ -6,13 +6,46 @@ authors = ["Biswaroop Bhattacharjee <biswaroop08@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-isort = "^5.10.1"
-black = "^22.6.0"
-pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
+# linting
+isort = "^5.10.1"
+black = "^22.6.0"
+flake8 = "^4.0.1"
+pre-commit = "^2.20.0"
+# testing
 pytest = "^5.2"
+pytest-cov = "^3.0.0"
+pytest-sugar = "~0"
+# benchmarking
+pyright = "^1.1.256"
+ipykernel = "^6.15.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.run]
+branch = true
+source = ["microbatcher", "tests"]
+dynamic_context = "test_function"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    '\.\.\.',
+    "raise NotImplementedError",
+    "TYPE_CHECKING",
+    "__repr__",
+    "import",
+]
+fail_under = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[settings]
+known_third_party = []
