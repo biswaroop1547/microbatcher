@@ -1,4 +1,7 @@
+import asyncio
 from time import sleep, time
+
+from fastapi.concurrency import run_in_threadpool
 
 import microbatcher.constants as const
 from microbatcher.api import app, loaders
@@ -11,34 +14,32 @@ loadedModel = loaders.Model()
 global_queue.set_model(loadedModel)
 
 
-@app.post("/predict/")
-def read_root(payload: requests.Input):
-    datapoint = DataPoint(payload.dict().get("data"))
+async def get_response(queue_, datapoint):
+    while not (pred := queue_.get_prediction(datapoint.uuid)):
+        await asyncio.sleep(0.0000001)
+    return pred
 
+
+async def enqueue_request(queue_, datapoint):
     while global_queue.put(datapoint) is False:
-        # print(f"queue to empty -> curr size : {global_queue.item_count}")
-        sleep(0.0000001)
-        pass
+        await asyncio.sleep(0.0000001)
 
+
+async def queue_patience_timeout(queue_):
     while (
-        global_queue.start
-        and ((time_passed := (time() - global_queue.start)) < 1.2)
-        and (global_queue.item_count <= const.QUEUE_MAXSIZE)
+        queue_.start
+        and ((time() - queue_.start) < const.QUEUE_TIMEOUT)
+        and (queue_.item_count <= const.QUEUE_MAXSIZE)
     ):
-        sleep(0.0000001)
-        pass
+        await asyncio.sleep(0.0000001)
 
-    run_success = global_queue.process_items()
 
-    while True:
-        pred = global_queue.get_prediction(datapoint.uuid)
-        if pred is not None:
-            break
+@app.post("/predict/")
+async def read_root(payload: requests.Input):
+    datapoint = DataPoint(payload.dict().get("data"))
+    await enqueue_request(global_queue, datapoint)
+    await queue_patience_timeout(global_queue)
+    run_success = await run_in_threadpool(global_queue.process_items)
+    pred = await get_response(global_queue, datapoint)
 
-        print("waiting for prediction:", datapoint.data, pred)
-        print("results inside loop:", global_queue.results)
-        # print("run_status:", run_success)
-        sleep(0.0000001)
-        pass
-    print("predddd:", pred)
     return {"message": "ok", "result": pred}

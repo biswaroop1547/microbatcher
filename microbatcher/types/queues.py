@@ -91,7 +91,6 @@ class ProcessorQueue:
 
     def process_items(self):
         run_success = False
-        # self.mutex.acquire()
         with self.mutex:
             # acquire lock
             try:
@@ -106,10 +105,8 @@ class ProcessorQueue:
                     uuids = []
                     self.reset_processed()
                     for idx, datapoint in enumerate(self.queue):
-                        # self.processed_outputs[datapoint.uuid] = idx
                         datapoints.append(datapoint.data)
                         uuids.append(datapoint.uuid)
-                        # datapoint.data_processed()
                     print(f"processingggg {len(datapoints)} datapoints")
                     self.results = model.predict(np.array(datapoints))
                     self.processed_outputs = {
@@ -121,13 +118,6 @@ class ProcessorQueue:
                     }
                     self.reset_time(datapoints_processed=len(self.results))
                     run_success = True
-                    print("time resetted")
-                    print("count resetted")
-                    if len(datapoints) == 1:
-                        print("special caseeeeeeeeeeeeeeeee")
-                        print(self.processed_outputs, self.results)
-                        # exit()
-                        # mark those items as processed
             finally:
                 # release lock
                 # self.mutex.release()
