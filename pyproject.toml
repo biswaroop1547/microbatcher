@@ -6,6 +6,10 @@ authors = ["Biswaroop Bhattacharjee <biswaroop08@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+fastapi = "^0.85.0"
+uvicorn = {extras = ["standard"], version = "^0.18.3"}
+loguru = "^0.6.0"
+numpy = "^1.23.3"
 
 [tool.poetry.dev-dependencies]
 # linting
