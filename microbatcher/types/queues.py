@@ -3,10 +3,12 @@ import multiprocessing
 import threading
 from multiprocessing.queues import Queue
 from time import sleep, time
+from typing import Optional
 
 import numpy as np
 
 import microbatcher.constants as const
+from microbatcher.api.handlers.loaders import Model
 
 
 class MicroQueue(Queue):
@@ -30,7 +32,7 @@ class ProcessorQueue:
         self.mutex = threading.Lock()
         self.tasks_processing = threading.Condition(self.mutex)
         self.task_enqueue = threading.Condition(self.mutex)
-        self.model = None
+        self.model: Optional[Model] = None
         self.processed_outputs = {}
         self.results = []
         self.start = 0
