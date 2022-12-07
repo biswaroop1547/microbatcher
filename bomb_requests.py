@@ -12,7 +12,7 @@ tests_json_dir = "test_requests"
 file_infos = {}
 payloads = []
 
-for json_file in os.listdir(tests_json_dir)*21:
+for json_file in os.listdir(tests_json_dir)*25:
     with open(os.path.join(tests_json_dir, json_file), "r", encoding="utf-8") as f:
         request_dict = json.load(f)
         # file_infos[json_file] = request_dict["true_intent"]
