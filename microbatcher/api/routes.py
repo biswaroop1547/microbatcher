@@ -16,9 +16,6 @@ PROCESSOR = handlers.Processor()
 @app.post("/predict/")
 async def predict(payload: requests.Input):
     datapoint = DataPoint(payload.dict().get("data"))
-    await PROCESSOR.enqueue_request(datapoint)
-    await PROCESSOR.queue_patience_timeout()
-    await PROCESSOR.process()
-    pred = await PROCESSOR.get_response(datapoint)
+    pred = await PROCESSOR.inference(datapoint)
 
     return {"message": "ok", "result": pred}

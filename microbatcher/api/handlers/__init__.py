@@ -17,13 +17,20 @@ class Processor:
     async def process(self):
         _ = await run_in_threadpool(self.queue.process_items)
 
+    async def inference(self, datapoint: DataPoint):
+        await self.enqueue_request(datapoint)
+        await self.queue_patience_timeout()
+        await self.process()
+        return await self.get_response(datapoint)
+
     @wrappers.retry_on_timeout
     async def get_response(self, datapoint: DataPoint):
         # Wait for the prediction to be available
-        pred = await asyncio.wait_for(
-            self.queue.get_prediction(datapoint.uuid), timeout=const.OPS_TIMEOUT
-        )
-        return pred
+        while True:
+            if pred := await asyncio.wait_for(
+                self.queue.get_prediction(datapoint.uuid), timeout=const.OPS_TIMEOUT
+            ):
+                return pred
 
     @wrappers.retry_on_timeout
     async def enqueue_request(self, datapoint: DataPoint):

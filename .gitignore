@@ -132,3 +132,4 @@ dmypy.json
 # Custom
 .history/
 .vscode/
+request_1.lua

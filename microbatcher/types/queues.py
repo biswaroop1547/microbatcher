@@ -52,7 +52,7 @@ class ProcessorQueue:
             self.mutex.acquire()
 
             if self.item_count < self.max_queue_size:
-                self.queue.put_nowait(obj)
+                self.queue.put(obj)
                 self.item_count += 1
                 print(f"item count: {self.item_count}")
                 self.start_time()
